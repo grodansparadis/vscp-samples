@@ -1,6 +1,6 @@
 /*
  * TCP/IP PIR to VSCP daemon
- * Copyright (C) 2017 https://www.vscp.org 
+ * Copyright (C) 2017-2021 https://www.vscp.org 
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 #include <ESP8266WiFi.h>
 // Alternativ is described here https://diyprojects.io/esp8266-web-client-tcp-ip-communication-examples-esp8266wifi-esp866httpclient/#.WpAdNuYo_0o
 
-#define VSCP_DUMB_NODE  16384
+#define VSCP_DUMB_NODE  32768
 
 const char* ssid     = "grodansparadis";       // SSID
 const char* password = "xxxxxxxxxxxxx";        // Password
