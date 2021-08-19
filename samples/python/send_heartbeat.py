@@ -1,8 +1,8 @@
 #!/usr/bin/python
 """
-// File: send_pi_gpu_temp.py
+// File: send_hearbeat.py
 //
-// Usage: send_pi_gpu_temp host user password [guid]
+// Usage: send_pi_cpu_temp host user password [guid]
 //
 // Described here https://github.com/grodansparadis/vscp-samples/tree/master/samples/python
 //
@@ -26,14 +26,13 @@
 // the Free Software Foundation, 59 Temple Place - Suite 330,
 // Boston, MA 02111-1307, USA.
 //
-// 
+// cat /sys/class/thermal/thermal_zone0/temp
 """
 
 import getpass
 import sys
 import telnetlib
 import sys
-import os
 
 if ( len(sys.argv) < 4 ):
 	sys.exit("Wrong number of parameters - aborting")
@@ -44,12 +43,6 @@ user = sys.argv[2]
 password = sys.argv[3]
 if ( len(sys.argv) > 3 ):
 	guid = sys.argv[4]
-
-temperature = os.popen("/opt/vc/bin/vcgencmd measure_temp").read()
-temperature = temperature[5:9]
-tempfloat = float( temperature )
-#sys.exit(tempfloat);
-
 
 # Connect to VSCP daemon
 tn = telnetlib.Telnet(host, 9598)
@@ -63,26 +56,12 @@ tn.write("pass " + password + "\n")
 tn.read_until("+OK - Success.",2)
 
 event = "3,"		# Priority=normal
-event += "10,6,"	# Temperature measurement class=10, type=6
-event += ","		# DateTime is set to current by VSCP daemon
+event += "20,9,"	# Heartbeat
+event += ","		# DateTime set to current by VSCP daemon
 event += "0,"		# Use interface timestamp
 event += "0,"  		# Use obid of interface
 event += guid  + ","	# add GUID to event
-
-# datacoding = String format| Celsius | sensor 0
-datacoding = 0x40 | (1<<3) | 0  
-event += hex(datacoding)	# Add datacoding byte to event
-
-# Make sure length is OK (max seven characters)
-tempstr = str( tempfloat )
-tempstr = tempstr.strip()
-if ( len(tempstr) > 7 ):
-    tempstr = tempstr[0:7]
-
-# Write temperature into the event (not line breaks)
-for ch in tempstr:
-    event += ","
-    event += hex(ord(ch))
+event += "0,255,255"    # To all zones/subzones
 
 # Send event to server
 tn.write("send " + event + "\n")

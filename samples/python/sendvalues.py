@@ -4,7 +4,7 @@
 //
 // Usage: digitemp -a -q | send host user password
 //
-// Described here file:///home/akhe/development/sendvalues.py 
+// Described here https://github.com/grodansparadis/vscp-samples/tree/master/samples/python
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -13,7 +13,7 @@
 //
 // This file is part of the VSCP (http://www.vscp.org)
 //
-// Copyright (C) 2000-2019 Ake Hedman,
+// Copyright (C) 2000-2021
 // Ake Hedman, Grodans Paradis AB, <akhe@grodansparadis.com>
 //
 // This file is distributed in the hope that it will be useful,
@@ -26,6 +26,9 @@
 // the Free Software Foundation, 59 Temple Place - Suite 330,
 // Boston, MA 02111-1307, USA.
 //
+// LOG_FORMAT "%R %.2C"
+//
+
 """
 
 import getpass
@@ -46,14 +49,15 @@ password = sys.argv[3]
 
 # Connet to VSCP daemon
 tn = telnetlib.Telnet(host, 9598)
-tn.read_until("+OK",2)
+tn.read_until("+OK".encode('ascii'),2)
 
 # Login
-tn.write("user " + user + "\n")
-tn.read_until("+OK", 2)
+tn.write("user " .encode('ascii') + user.encode('ascii') + "\n".encode('ascii'))
+tn.read_until("+OK".encode('ascii'), 2)
 
-tn.write("pass " + password + "\n")
-tn.read_until("+OK - Success.",2)
+tn.write("pass " .encode('ascii') + password .encode('ascii') + "\n".encode('ascii'))
+
+tn.read_until("+OK - Success.".encode('ascii'),2)
 
 # For each line from piped digitemp output
 for line in sys.stdin:
@@ -93,8 +97,9 @@ for line in sys.stdin:
             event += hex(ord(ch)) 
 
     # Send event to server
-    tn.write("send " + event + "\n")
-    tn.read_until("+OK - Success.",2)
+    print("event=" + event)
+    tn.write("send " .encode('ascii') + event .encode('ascii') + "\n".encode('ascii')) 
+    tn.read_until("+OK - Success.".encode('ascii'),2)
 
-tn.write("quit\n")
+tn.write("quit\n".encode('ascii'))
 

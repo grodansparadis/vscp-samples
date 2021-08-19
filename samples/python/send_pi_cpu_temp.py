@@ -4,7 +4,7 @@
 //
 // Usage: send_pi_cpu_temp host user password [guid]
 //
-// Described here https://github.com/grodansparadis/vscp/blob/master/src/vscp/samples/python/send_pi_cpu_temp.py
+// Described here https://github.com/grodansparadis/vscp-samples/tree/master/samples/python
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -13,7 +13,7 @@
 //
 // This file is part of the VSCP (http://www.vscp.org)
 //
-// Copyright (C) 2000-2019 Ake Hedman,
+// Copyright (C) 2000-2021
 // Ake Hedman, Grodans Paradis AB, <akhe@grodansparadis.com>
 //
 // This file is distributed in the hope that it will be useful,
@@ -42,13 +42,13 @@ host = sys.argv[1]
 user = sys.argv[2]
 password = sys.argv[3]
 if ( len(sys.argv) > 3 ):
-	guid = sys.argv[4]
+    guid = sys.argv[4]
 
 f = open('/sys/class/thermal/thermal_zone0/temp', 'r')
 temperature = f.readline();
 tempfloat = float( temperature )/1000;
 
-# Connet to VSCP daemon
+# Connect to VSCP daemon
 tn = telnetlib.Telnet(host, 9598)
 tn.read_until("+OK",2)
 
@@ -61,7 +61,7 @@ tn.read_until("+OK - Success.",2)
 
 event = "3,"		# Priority=normal
 event += "10,6,"	# Temperature measurement class=10, type=6
-event += ","		# DateTime
+event += ","		# DateTime is set to current bu VSCP daemon
 event += "0,"		# Use interface timestamp
 event += "0,"  		# Use obid of interface
 event += guid  + ","	# add GUID to event
