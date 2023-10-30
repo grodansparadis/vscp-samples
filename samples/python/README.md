@@ -1,16 +1,18 @@
 <h1>Python Scripts and interface to the VSCP daemon</h1>
 
 <b>vscp_class.py</b> This module contains the definitions for the available VSCP 
-class id's.
+class id's. This may not be the latest version. The latest version can be downloaded
+from <https://vscp.org/events/>
 
 <b>vscp_type.py</b> This module contains the definitions for the available VSCP 
-type id's.
+type id's. This may not be the latest version. The latest version can be downloaded
+from <https://vscp.org/events/>
 
 <b>vscpdif.py</b> This python module demonstrates how to communicate with the 
 vscpd daemon trough the TCP/IP interface. 
 Copyright (C) 2009 Thomas Schulz <tschulz@iprimus.com.au>
 
-<b>send burst.py</b> This program has been created to test the data troughput of the daemon by sending a number of messages. 
+<b>send burst.py</b> This program has been created to test the data throughput of the daemon by sending a number of messages. 
 It is not intended to be bullet proof or to be fit for any purpose. 
 Copyright (C) 2009 Thomas Schulz <tschulz@iprimus.com.au>
 
@@ -41,7 +43,7 @@ Copyright (C) 2009 Thomas Schulz <tschulz@iprimus.com.au>
 
 <b>sendvalues.py</b> Script that shows how to take temperature 
 sensor values from the one wire digitemp software and send them to the VSCP daemon.
-Described here: <a href="www.vscp.org/wiki/doku.php/howto/how_to_setup_digitemp">How to setup digitemp</a>
+Described here: <a href="https://github.com/grodansparadis/vscp/wiki/How-to-send-Digitemp-readings-to-VSCP-daemon">How to send Digitemp readings to VSCP daemon</a>
 
-<b>gettempfromyr.py</p> Weather forecast sample. Reads forcast for temperature and wind 
+<b>gettempfromyr.py</p> Weather forecast sample. Reads forecast for temperature and wind 
 from yr.no and send to the VSCP daemon.
