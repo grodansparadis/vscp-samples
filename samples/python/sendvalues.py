@@ -2,8 +2,6 @@
 """
 // File: sendvalues.py
 //
-// Usage: digitemp -a -q | send host user password
-//
 // Described here https://github.com/grodansparadis/vscp-samples/tree/master/samples/python
 //
 // This program is free software; you can redistribute it and/or
@@ -13,7 +11,7 @@
 //
 // This file is part of the VSCP (http://www.vscp.org)
 //
-// Copyright (C) 2000-2021
+// Copyright (C) 2000-2023
 // Ake Hedman, Grodans Paradis AB, <akhe@grodansparadis.com>
 //
 // This file is distributed in the hope that it will be useful,

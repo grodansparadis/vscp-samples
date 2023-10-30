@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-// File: send_pi_cpu_temp.py
+// File: send_hearbeat3.py
 //
 // Usage: send_pi_cpu_temp host user password [guid]
 //
@@ -27,11 +27,21 @@
 // Boston, MA 02111-1307, USA.
 //
 // cat /sys/class/thermal/thermal_zone0/temp
+
+send_hearbeat3 host user password [guid]
+
+cron example
+* * * * * root cd /root;./.venv/bin/python ./send_heartbeat3.py 192.168.1.7 admin secret FF:FF:FF:FF:FF:FF:FF:FE:60:A4:4C:E7:76:5A:00:00
+
+.venv should have asyncio and telnetlib3 installed
+
 """
+
 
 import getpass
 import sys
-import telnetlib
+import asyncio
+import telnetlib3
 import sys
 
 if ( len(sys.argv) < 4 ):
@@ -47,17 +57,6 @@ if ( len(sys.argv) > 3 ):
 f = open('/sys/class/thermal/thermal_zone0/temp', 'r')
 temperature = f.readline();
 tempfloat = float( temperature )/1000;
-
-# Connect to VSCP daemon
-tn = telnetlib.Telnet(host, 9598)
-tn.read_until("+OK",2)
-
-# Login
-tn.write("user " + user + "\n")
-tn.read_until("+OK", 2)
-
-tn.write("pass " + password + "\n")
-tn.read_until("+OK - Success.",2)
 
 event = "3,"		# Priority=normal
 event += "10,6,"	# Temperature measurement class=10, type=6
@@ -81,9 +80,39 @@ for ch in tempstr:
     event += ","
     event += hex(ord(ch))
 
-# Send event to server
-tn.write("send " + event + "\n")
-tn.read_until("+OK - Success.",2)
+async def shell(reader, writer):
+    rules = [
+            ('+OK', 'user admin'),
+            ('+OK', 'pass secret'),
+            ('+OK', 'send ' + event),
+            ('+OK', 'quit'),
+            ]
 
-tn.write("quit\n")
+    ruleiter = iter(rules)
+    expect, send = next(ruleiter)
+    while True:
+        outp = await reader.read(1024)
+        if not outp:
+          break
 
+        if expect in outp:
+            writer.write(send)
+            writer.write('\r\n')
+            try:
+                expect, send = next(ruleiter)
+            except StopIteration:
+                break
+
+        # display all server output
+        print(outp, flush=True)
+
+    # EOF
+    print()
+
+async def main():
+  reader, writer = await telnetlib3.open_connection(host, 9598, shell=shell)
+  await writer.protocol.waiter_closed
+
+
+if __name__ == '__main__':
+    asyncio.run(main())

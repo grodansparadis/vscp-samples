@@ -28,7 +28,13 @@
 //
 // cat /sys/class/thermal/thermal_zone0/temp
 
-send_hearbeat host user password
+send_hearbeat3 host user password [guid]
+
+cron example
+* * * * * root cd /root;./.venv/bin/python ./send_heartbeat3.py 192.168.1.7 admin secret FF:FF:FF:FF:FF:FF:FF:FE:60:A4:4C:E7:76:5A:00:00
+
+.venv should have asyncio and telnetlib3 installed
+
 """
 
 
