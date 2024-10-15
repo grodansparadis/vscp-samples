@@ -1,0 +1,1 @@
+* * * * * root cd /root;./smoke_gas_temp.py 192.168.1.7 admin secret FF:FF:FF:FF:FF:FF:FF:FE:B8:27:EB:CF:3A:15:00:03
