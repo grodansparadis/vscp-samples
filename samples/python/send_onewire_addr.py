@@ -4,9 +4,9 @@
 // ORIGINAL from ADAFRUIT (http://www.adafruit.com)
 // http://learn.adafruit.com/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing/software
 //
-// File: send_pi_onewire.py
+// File: send_onewire_addr.py
 //
-// Usage: ./send_pi_onewire host user password
+// Usage: ./send_pi_onewire host user password guid
 //
 // Described here file:///home/akhe/development/sendvalues.py 
 //
@@ -36,7 +36,6 @@
 
 import os
 import sys
-#import telnetlib
 from telnetlib import Telnet
 import glob
 import time
@@ -45,9 +44,9 @@ os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
 onewire_prefix = "FF:FF:FF:FF:FF:FF:FF:FF:"
+guid = b"FF:FF:FF:FF:FF:FF:FF:FF:00:00:00:00:00:00:00:00"
 
 base_dir = '/sys/bus/w1/devices/'
-#base_dir = '/home/akhe/development/simonewire/'   # for test and simulation during development
 
 def construct_guid( line ):
     guid = onewire_prefix + line[0:2].upper() + ":" + \
@@ -67,7 +66,7 @@ def read_temp_raw( device_file ):
     return lines
 
 def handle_temperature( device_file ):
-    
+
     # Read lines
     lines = read_temp_raw( device_file )
 
@@ -85,12 +84,11 @@ def handle_temperature( device_file ):
         temperature = str( temp_c )
 
         # construct event
-        guid = construct_guid( lines[1] ) 
-        event = "3,"	    # Priority=normal
-        event += "10,6,"    # Temperature measurement class=10, type=6
-        event += "0,"	    # Use interface timestamp
-        event += ","        # Set current time
-        event += "0,"  	    # Use obid of interface
+        event = "3,"	    	# Priority=normal
+        event += "1040,6,"  	# Temperature measurement class=10, type=6
+        event += "0,"	    	# Use interface timestamp
+        event += ","        	# Set current time
+        event += "0,"  	    	# Use obid of interface
         event += guid  + ","	# add GUID to event
 
         # datacoding = String format| Celsius | sensor 0
@@ -133,7 +131,7 @@ tn.read_until(b"+OK - Success.",2)
 
 # Send temperature readings from all sensors
 for folder in glob.glob( base_dir + '28*' ):
-    device_file =  folder + '/w1_slave'
+    device_file =  folder + '/temperature'
     handle_temperature( device_file )
 
 # Close connection to VSCP daemon
