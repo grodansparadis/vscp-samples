@@ -1,0 +1,1 @@
+* * * * * root cd /root;python3 mqtt_bme680.py -c config_bme680.ini
