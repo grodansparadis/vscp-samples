@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-// File: send_hearbeat3.py
+// File: send_pi_cpu_temp3.py
 //
 // Usage: send_pi_cpu_temp host user password [guid]
 //
@@ -13,7 +13,7 @@
 //
 // This file is part of the VSCP (http://www.vscp.org)
 //
-// Copyright (C) 2000-2023
+// Copyright (C) 2000-2025
 // Ake Hedman, Grodans Paradis AB, <akhe@grodansparadis.com>
 //
 // This file is distributed in the hope that it will be useful,
@@ -28,13 +28,7 @@
 //
 // cat /sys/class/thermal/thermal_zone0/temp
 
-send_hearbeat3 host user password [guid]
-
-cron example
-* * * * * root cd /root;./.venv/bin/python ./send_heartbeat3.py 192.168.1.7 admin secret FF:FF:FF:FF:FF:FF:FF:FE:60:A4:4C:E7:76:5A:00:00
-
-.venv should have asyncio and telnetlib3 installed
-
+send_hearbeat host user password
 """
 
 
@@ -47,27 +41,28 @@ import sys
 if ( len(sys.argv) < 4 ):
 	sys.exit("Wrong number of parameters - aborting")
 
+#print(len(sys.argv))
 guid = "-"
 host = sys.argv[1]
 user = sys.argv[2]
 password = sys.argv[3]
-if ( len(sys.argv) > 3 ):
-    guid = sys.argv[4]
+if ( len(sys.argv) > 4 ):
+	guid = sys.argv[4]
 
 f = open('/sys/class/thermal/thermal_zone0/temp', 'r')
 temperature = f.readline();
 tempfloat = float( temperature )/1000;
 
 event = "3,"		# Priority=normal
-event += "10,6,"	# Temperature measurement class=10, type=6
-event += ","		# DateTime is set to current bu VSCP daemon
+event += "10,6,"	# Temperature
+event += ","		# DateTime set to current by VSCP daemon
 event += "0,"		# Use interface timestamp
 event += "0,"  		# Use obid of interface
 event += guid  + ","	# add GUID to event
 
 # datacoding = String format| Celsius | sensor 0
-datacoding = 0x40 | (1<<3) | 0  
-event += hex(datacoding)	# Add datacoding byte to event
+datacoding = 0x40 | (1<<3) | 0
+event += hex(datacoding)        # Add datacoding byte to event
 
 # Make sure length is OK (max seven characters)
 tempstr = str( tempfloat )
@@ -79,6 +74,7 @@ if ( len(tempstr) > 7 ):
 for ch in tempstr:
     event += ","
     event += hex(ord(ch))
+
 
 async def shell(reader, writer):
     rules = [
